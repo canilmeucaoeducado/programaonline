@@ -1562,4 +1562,36 @@ document.addEventListener('DOMContentLoaded',function(){
   })();
   }); // fim DOMContentLoaded
 </script>
+
+<!-- Rastreio de origem: carrega os utm_* para o checkout da Eduzz -->
+<script>
+(function () {
+  var PAGINA = 'pagina-curta';
+  var PADRAO = { utm_source: 'dm', utm_medium: 'link', utm_campaign: 'meucaoeducado' };
+  function aplicar() {
+    try {
+      var atual = new URLSearchParams(window.location.search);
+      var params = {};
+      ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term'].forEach(function (k) {
+        var v = atual.get(k);
+        params[k] = (v && v.trim()) ? v.trim() : PADRAO[k];
+      });
+      params.utm_content = PAGINA;
+      var links = document.querySelectorAll('a[href*="chk.eduzz.com"]');
+      for (var i = 0; i < links.length; i++) {
+        var url = new URL(links[i].href, window.location.href);
+        Object.keys(params).forEach(function (k) {
+          if (params[k]) url.searchParams.set(k, params[k]);
+        });
+        links[i].setAttribute('href', url.toString());
+      }
+    } catch (e) {}
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', aplicar);
+  } else {
+    aplicar();
+  }
+})();
+</script>
 </body>
